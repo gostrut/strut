@@ -1,0 +1,61 @@
+package strut
+
+import "reflect"
+import "github.com/gostrut/invalid"
+import "github.com/gostrut/validator"
+
+type strut struct {
+	validators map[string]validator.Func
+}
+
+// NewValidator returns a new strut
+func NewValidator() *strut {
+	return &strut{
+		validators: make(map[string]validator.Func),
+	}
+}
+
+// Checks appends validators to be validated against
+func (s *strut) Checks(tagName string, fn validator.Func) {
+	s.validators[tagName] = fn
+}
+
+// Validates interates through struct fiels and validates where applicable
+func (s strut) Validates(obj interface{}) (invalid.Fields, error) {
+	if len(s.validators) == 0 {
+		return nil, nil // if no validators
+	}
+
+	var invf invalid.Fields
+	var to = reflect.TypeOf(obj)
+
+	i := 0
+	len := to.NumField()
+	for ; i < len; i++ {
+		fld := to.Field(i)
+		tag := fld.Tag
+		if "" == tag {
+			continue // if no StructTag
+		}
+
+		vo := reflect.ValueOf(obj)
+		vf := vo.Field(i)
+		for k, v := range s.validators {
+			tstr := tag.Get(k)
+			if "" == tstr {
+				continue // if tag value is ""
+			}
+
+			f, err := v.Validate(fld.Name, tstr, &vf)
+			if err != nil {
+				return nil, err
+			}
+
+			if f != nil {
+				invf = append(invf, f)
+			}
+		}
+	}
+
+	return invf, nil
+}
