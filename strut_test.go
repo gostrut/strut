@@ -3,7 +3,7 @@ package strut
 import "testing"
 import "github.com/nowk/assert"
 
-func TestStrut(t *testing.T) {
+func TestStrutInvalid(t *testing.T) {
 	type Person struct {
 		Name    string `length_of:"2:" format_of:"^foo$"`
 		Email   string `presence_of:"true"`
