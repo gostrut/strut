@@ -70,5 +70,5 @@ type NonStructError struct {
 }
 
 func (e NonStructError) Error() string {
-	return fmt.Sprintf("error: non-struct type: cannot validate type of %s", e.Name)
+	return fmt.Sprintf("error: non-struct: cannot validate type of %s", e.Name)
 }
