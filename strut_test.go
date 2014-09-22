@@ -41,3 +41,11 @@ func TestStrutError(t *testing.T) {
 	assert.Nil(t, fields)
 	assert.Equal(t, "Whoops", err.Error())
 }
+
+func TestStrutOnlyValidatesStructType(t *testing.T) {
+	val := NewValidator()
+	val.Checks("presence_of", invalidated)
+
+	_, err := val.Validates("str")
+	assert.Equal(t, err.Error(), "error: non-struct type: cannot validate type of string")
+}

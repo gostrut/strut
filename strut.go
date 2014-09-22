@@ -1,5 +1,6 @@
 package strut
 
+import "fmt"
 import "reflect"
 import "github.com/gostrut/invalid"
 import "github.com/gostrut/validator"
@@ -28,6 +29,9 @@ func (s strut) Validates(obj interface{}) (invalid.Fields, error) {
 
 	var invf invalid.Fields
 	var to = reflect.TypeOf(obj)
+	if to.Kind() != reflect.Struct {
+		return nil, NonStructError{to.Name()}
+	}
 
 	i := 0
 	len := to.NumField()
@@ -58,4 +62,13 @@ func (s strut) Validates(obj interface{}) (invalid.Fields, error) {
 	}
 
 	return invf, nil
+}
+
+// NonStructError is an error implement for non struct types
+type NonStructError struct {
+	Name string
+}
+
+func (e NonStructError) Error() string {
+	return fmt.Sprintf("error: non-struct type: cannot validate type of %s", e.Name)
 }
