@@ -28,6 +28,20 @@ func TestStrut(t *testing.T) {
 	assert.Equal(t, "Email is invalid; tag: `true`", f3.Error())
 }
 
+func TestStrutValid(t *testing.T) {
+	type Person struct {
+		Name string `is_valid:"true"`
+	}
+
+	val := NewValidator()
+	val.Checks("is_valid", validated)
+
+	a := Person{}
+	fields, err := val.Validates(a)
+	assert.Nil(t, err)
+	assert.True(t, fields.Valid())
+}
+
 func TestStrutError(t *testing.T) {
 	type Post struct {
 		Body string `length_of:"2"`

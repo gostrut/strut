@@ -35,3 +35,7 @@ func invalidated(name, tagStr string, vo *reflect.Value) (invalid.Field, error) 
 func errored(name, tagStr string, vo *reflect.Value) (invalid.Field, error) {
 	return nil, fmt.Errorf("Whoops")
 }
+
+func validated(_, _ string, _ *reflect.Value) (invalid.Field, error) {
+	return nil, nil
+}
