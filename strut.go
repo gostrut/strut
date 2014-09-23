@@ -33,24 +33,22 @@ func (s strut) Validates(obj interface{}) (invalid.Fields, error) {
 		return nil, NonStructError{to.Name()}
 	}
 
-	i := 0
 	len := to.NumField()
-	for ; i < len; i++ {
+	for i := 0; i < len; i++ {
 		fld := to.Field(i)
-		tag := fld.Tag
-		if "" == tag {
+		if "" == fld.Tag {
 			continue // if no StructTag
 		}
 
 		vo := reflect.ValueOf(obj)
 		vf := vo.Field(i)
 		for k, v := range s.validators {
-			tstr := tag.Get(k)
-			if "" == tstr {
+			tag := fld.Tag.Get(k)
+			if "" == tag {
 				continue // if tag value is ""
 			}
 
-			f, err := v.Validate(fld.Name, tstr, &vf)
+			f, err := v.Validate(fld.Name, tag, &vf)
 			if err != nil {
 				return nil, err
 			}
