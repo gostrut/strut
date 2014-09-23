@@ -17,15 +17,14 @@ func TestStrutInvalid(t *testing.T) {
 
 	a := Person{}
 	fields, err := val.Validates(a)
-	f1 := fields[0]
-	f2 := fields[1]
-	f3 := fields[2]
 	assert.Nil(t, err)
 	assert.False(t, fields.Valid())
-	assert.Equal(t, 3, fields.Len())
-	assert.Equal(t, "Name is invalid; tag: `^foo$`", f1.Error())
-	assert.Equal(t, "Name is invalid; tag: `2:`", f2.Error())
-	assert.Equal(t, "Email is invalid; tag: `true`", f3.Error())
+	assert.Equal(t, 2, fields.Len())
+
+	fname := fields.Get("Name")
+	femail := fields.Get("Email")
+	assert.Equal(t, 2, len(fname))
+	assert.Equal(t, 1, len(femail))
 }
 
 func TestStrutValid(t *testing.T) {

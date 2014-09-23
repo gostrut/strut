@@ -27,12 +27,12 @@ func (s strut) Validates(obj interface{}) (invalid.Fields, error) {
 		return nil, nil // if no validators
 	}
 
-	var invf invalid.Fields
 	var to = reflect.TypeOf(obj)
 	if to.Kind() != reflect.Struct {
 		return nil, NonStructError{to.Name()}
 	}
 
+	fields := invalid.NewFields()
 	len := to.NumField()
 	for i := 0; i < len; i++ {
 		fld := to.Field(i)
@@ -54,12 +54,12 @@ func (s strut) Validates(obj interface{}) (invalid.Fields, error) {
 			}
 
 			if f != nil {
-				invf = append(invf, f)
+				fields.Add(fld.Name, f)
 			}
 		}
 	}
 
-	return invf, nil
+	return fields, nil
 }
 
 // NonStructError is an error implement for non struct types
