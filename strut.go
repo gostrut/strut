@@ -27,7 +27,7 @@ func (s strut) Validates(obj interface{}) (invalid.Fields, error) {
 		return nil, nil // if no validators
 	}
 
-	var to = reflect.TypeOf(obj)
+	to := reflect.TypeOf(obj)
 	if to.Kind() != reflect.Struct {
 		return nil, NonStructError{to.Name()}
 	}
