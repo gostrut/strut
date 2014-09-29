@@ -5,7 +5,7 @@
 
 Validate your struct
 
-# Example
+## Example
 
     type Person struct {
       Name    string `length_of:"2:" format_of:"^\w+$"`
@@ -28,6 +28,6 @@ Validate your struct
       // handle invalid struct
     }
 
-# MIT
+## License
 
-License
+MIT
