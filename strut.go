@@ -5,24 +5,24 @@ import "reflect"
 import "github.com/gostrut/invalid"
 import "github.com/gostrut/validator"
 
-type strut struct {
+type Strut struct {
 	validators map[string]validator.Func
 }
 
-// NewValidator returns a new strut
-func NewValidator() *strut {
-	return &strut{
+// NewValidator returns a new Strut
+func NewValidator() *Strut {
+	return &Strut{
 		validators: make(map[string]validator.Func),
 	}
 }
 
 // Checks appends validators to be validated against
-func (s *strut) Checks(tagName string, fn validator.Func) {
+func (s *Strut) Checks(tagName string, fn validator.Func) {
 	s.validators[tagName] = fn
 }
 
 // Validates interates through struct fiels and validates where applicable
-func (s strut) Validates(obj interface{}) (invalid.Fields, error) {
+func (s Strut) Validates(obj interface{}) (invalid.Fields, error) {
 	if len(s.validators) == 0 {
 		return nil, nil // if no validators
 	}
