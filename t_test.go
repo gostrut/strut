@@ -1,8 +1,11 @@
 package strut
 
-import "fmt"
-import "reflect"
-import "github.com/gostrut/invalid"
+import (
+	"fmt"
+	"reflect"
+
+	"gopkg.in/gostrut/invalid.v0"
+)
 
 type tField struct {
 	name   string

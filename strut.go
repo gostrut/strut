@@ -1,23 +1,33 @@
 package strut
 
-import "fmt"
-import "reflect"
-import "github.com/gostrut/invalid"
-import "github.com/gostrut/validator"
+import (
+	"fmt"
+	"reflect"
+
+	"gopkg.in/gostrut/invalid.v0"
+)
+
+type ValidatorFunc func(string, string, *reflect.Value) (invalid.Field, error)
+
+func (v ValidatorFunc) Validate(
+	f, t string, r *reflect.Value) (invalid.Field, error) {
+
+	return v(f, t, r)
+}
 
 type Strut struct {
-	validators map[string]validator.Func
+	validators map[string]ValidatorFunc
 }
 
 // NewValidator returns a new Strut
 func NewValidator() *Strut {
 	return &Strut{
-		validators: make(map[string]validator.Func),
+		validators: make(map[string]ValidatorFunc),
 	}
 }
 
 // Checks appends validators to be validated against
-func (s *Strut) Checks(tagName string, fn validator.Func) {
+func (s *Strut) Checks(tagName string, fn ValidatorFunc) {
 	s.validators[tagName] = fn
 }
 
