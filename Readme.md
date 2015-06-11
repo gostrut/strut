@@ -5,6 +5,10 @@
 
 Validate your struct
 
+## Install
+
+    go get gopkg.in/gostrut/strut.v0
+
 ## Example
 
     type Person struct {
