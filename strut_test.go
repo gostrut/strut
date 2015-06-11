@@ -1,7 +1,10 @@
 package strut
 
-import "testing"
-import "github.com/nowk/assert"
+import (
+	"testing"
+
+	"gopkg.in/nowk/assert.v2"
+)
 
 func TestStrutInvalid(t *testing.T) {
 	type Person struct {
