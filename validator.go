@@ -4,79 +4,93 @@ import (
 	"fmt"
 	"reflect"
 
-	"gopkg.in/gostrut/invalid.v0"
+	"gopkg.in/gostrut/strut.v1/invalid"
 )
 
+// ValidatorFunc is the validator func signature. The first 2 strings are the
+// Field name and Field tag (what is within "", eg. json:"...") value
+// respectively
 type ValidatorFunc func(string, string, *reflect.Value) (invalid.Field, error)
 
 func (v ValidatorFunc) Validate(
-	f, t string, r *reflect.Value) (invalid.Field, error) {
+	n, t string, r *reflect.Value) (invalid.Field, error) {
 
-	return v(f, t, r)
+	return v(n, t, r)
 }
+
+type validators map[string]ValidatorFunc
 
 type Validator struct {
-	validators map[string]ValidatorFunc
+	validators validators
 }
 
-// NewValidator returns a new Validator
 func NewValidator() *Validator {
 	return &Validator{
-		validators: make(map[string]ValidatorFunc),
+		validators: make(validators),
 	}
 }
 
-// Checks appends validators to be validated against
-func (s *Validator) Checks(tagName string, fn ValidatorFunc) {
-	s.validators[tagName] = fn
+// Checks adds a ValidatorFunc to the list of validators associated to a given
+// field tag name
+func (v *Validator) Checks(n string, fn ValidatorFunc) {
+	v.validators[n] = fn
 }
 
-// Validates interates through struct fiels and validates where applicable
-func (s Validator) Validates(obj interface{}) (invalid.Fields, error) {
-	if len(s.validators) == 0 {
+func (v *Validator) validate(
+	f reflect.StructField, r reflect.Value) ([]invalid.Field, error) {
+
+	t := f.Tag
+	if t == "" {
+		return nil, nil
+	}
+
+	i := make([]invalid.Field, 0, len(v.validators))
+
+	for k, fn := range v.validators {
+		tval := t.Get(k)
+		if tval == "" {
+			continue // if tag value is ""
+		}
+
+		f, err := fn.Validate(f.Name, tval, &r)
+		if err != nil {
+			return nil, err
+		}
+		if f != nil {
+			i = append(i, f)
+		}
+	}
+
+	return i, nil
+}
+
+// Validates validates the available validators against the given object
+// returning a collection of invalid.Fields and an error
+func (v *Validator) Validates(o interface{}) (invalid.Fields, error) {
+	if len(v.validators) == 0 {
 		return nil, nil // if no validators
 	}
 
-	to := reflect.TypeOf(obj)
-	if to.Kind() != reflect.Struct {
-		return nil, NonStructError{to.Name()}
+	r := reflect.ValueOf(o)
+
+	t := r.Type()
+	if t.Kind() != reflect.Struct {
+		return nil,
+			fmt.Errorf("not a struct: cannot validate type of '%s'", t.Name())
 	}
 
-	fields := invalid.NewFields()
-	len := to.NumField()
-	for i := 0; i < len; i++ {
-		fld := to.Field(i)
-		if "" == fld.Tag {
-			continue // if no StructTag
+	e := make(invalid.Fields)
+
+	i := 0
+	n := t.NumField()
+	for ; i < n; i++ {
+		f, err := v.validate(t.Field(i), r.Field(i))
+		if err != nil {
+			return nil, err
 		}
 
-		vo := reflect.ValueOf(obj)
-		vf := vo.Field(i)
-		for k, v := range s.validators {
-			tag := fld.Tag.Get(k)
-			if "" == tag {
-				continue // if tag value is ""
-			}
-
-			f, err := v.Validate(fld.Name, tag, &vf)
-			if err != nil {
-				return nil, err
-			}
-
-			if f != nil {
-				fields.Add(fld.Name, f)
-			}
-		}
+		e.Add(f...)
 	}
 
-	return fields, nil
-}
-
-// NonStructError is an error implement for non struct types
-type NonStructError struct {
-	Name string
-}
-
-func (e NonStructError) Error() string {
-	return fmt.Sprintf("error: non-struct: cannot validate type of %s", e.Name)
+	return e, nil
 }
