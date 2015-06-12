@@ -1,8 +1,7 @@
 language: "go"
 install:
-  - go get github.com/nowk/assert
-  - go get github.com/gostrut/invalid
-  - go get github.com/gostrut/validator
+  - go get gopkg.in/nowk/assert.v2
+  - go get gopkg.in/gostrut.v1/invalid
 go:
   - "1.0"
   - "1.1"
