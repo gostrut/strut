@@ -1,13 +1,13 @@
 # strut
 
 [![Build Status](https://travis-ci.org/gostrut/strut.svg?branch=master)](https://travis-ci.org/gostrut/strut)
-[![GoDoc](https://godoc.org/github.com/gostrut/strut?status.svg)](http://godoc.org/github.com/gostrut/strut)
+[![GoDoc](https://godoc.org/gopkg.in/gostrut/strut.v1?status.svg)](http://godoc.org/gopkg.in/gostrut/strut.v1)
 
 Validate your struct
 
 ## Install
 
-    go get gopkg.in/gostrut/strut.v0
+    go get gopkg.in/gostrut/strut.v1
 
 ## Example
 
