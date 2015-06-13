@@ -14,12 +14,12 @@ func TestStrutInvalid(t *testing.T) {
 	}
 
 	val := NewValidator()
-	val.Checks("presence_of", invalidated)
-	val.Checks("format_of", invalidated)
-	val.Checks("length_of", invalidated)
+	val.Add("presence_of", invalidated)
+	val.Add("format_of", invalidated)
+	val.Add("length_of", invalidated)
 
 	a := Person{}
-	fields, err := val.Validates(a)
+	fields, err := val.Check(a)
 	assert.Nil(t, err)
 	assert.False(t, fields.Valid())
 	assert.Equal(t, 2, fields.Len())
@@ -36,10 +36,10 @@ func TestStrutValid(t *testing.T) {
 	}
 
 	val := NewValidator()
-	val.Checks("is_valid", validated)
+	val.Add("is_valid", validated)
 
 	a := Person{}
-	fields, err := val.Validates(a)
+	fields, err := val.Check(a)
 	assert.Nil(t, err)
 	assert.True(t, fields.Valid())
 }
@@ -50,18 +50,18 @@ func TestStrutError(t *testing.T) {
 	}
 
 	val := NewValidator()
-	val.Checks("length_of", errored)
+	val.Add("length_of", errored)
 
 	a := Post{}
-	fields, err := val.Validates(a)
+	fields, err := val.Check(a)
 	assert.Nil(t, fields)
 	assert.Equal(t, "Whoops", err.Error())
 }
 
 func TestStrutOnlyValidatesStructType(t *testing.T) {
 	val := NewValidator()
-	val.Checks("presence_of", invalidated)
+	val.Add("presence_of", invalidated)
 
-	_, err := val.Validates("str")
+	_, err := val.Check("str")
 	assert.Equal(t, err.Error(), "not a struct: cannot validate type of 'string'")
 }

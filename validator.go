@@ -30,9 +30,8 @@ func NewValidator() *Validator {
 	}
 }
 
-// Checks adds a ValidatorFunc to the list of validators associated to a given
-// field tag name
-func (v *Validator) Checks(n string, fn ValidatorFunc) {
+// Add adds a ValidatorFunc for a given tag
+func (v *Validator) Add(n string, fn ValidatorFunc) {
 	v.validators[n] = fn
 }
 
@@ -64,9 +63,9 @@ func (v *Validator) validate(
 	return i, nil
 }
 
-// Validates validates the available validators against the given object
-// returning a collection of invalid.Fields and an error
-func (v *Validator) Validates(o interface{}) (invalid.Fields, error) {
+// Check checks the given struct against the available validators, returning
+// an collection of invalid fields or error
+func (v *Validator) Check(o interface{}) (invalid.Fields, error) {
 	if len(v.validators) == 0 {
 		return nil, nil // if no validators
 	}
