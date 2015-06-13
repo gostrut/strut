@@ -18,12 +18,12 @@ Validate your struct
     }
 
     val := NewValidator()
-    val.Checks("presence_of", presenceof.Validator)
-    val.Checks("format_of", formatof.Validator)
-    val.Checks("length_of", lengthof.Validator)
+    val.Add("presence_of", presenceof.Validator)
+    val.Add("format_of", formatof.Validator)
+    val.Add("length_of", lengthof.Validator)
 
     p := Person{}
-    fields, err := val.Validates(p)
+    fields, err := val.Check(p)
     if err != nil {
       // handler validation error
     }
