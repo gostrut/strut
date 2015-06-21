@@ -1,5 +1,9 @@
 package invalid
 
+import (
+	"fmt"
+)
+
 // Field is an interface for an invalidated field
 type Field interface {
 	// Name is the field name
@@ -33,4 +37,21 @@ func (f Fields) Add(o ...Field) {
 
 		f[k] = append(f[k], v)
 	}
+}
+
+func (f Fields) Error() string {
+	var msg = ""
+
+	if !f.Valid() {
+		msg = "invalid fields:"
+		for k, u := range f {
+			msg += fmt.Sprintf("\n  * %s:", k)
+
+			for _, v := range u {
+				msg += fmt.Sprintf("\n    - %s", v.Error())
+			}
+		}
+	}
+
+	return msg
 }
