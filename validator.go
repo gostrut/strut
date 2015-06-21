@@ -24,10 +24,16 @@ type Validator struct {
 	validators validators
 }
 
-func NewValidator() *Validator {
-	return &Validator{
+func NewValidator(opts ...func(*Validator)) *Validator {
+	v := &Validator{
 		validators: make(validators),
 	}
+
+	for _, o := range opts {
+		o(v)
+	}
+
+	return v
 }
 
 // Add adds a ValidatorFunc for a given tag
@@ -73,8 +79,13 @@ func (v *Validator) Check(o interface{}) (invalid.Fields, error) {
 	}
 
 	r := reflect.ValueOf(o)
-
 	t := r.Type()
+
+	if t.Kind() == reflect.Ptr {
+		r = r.Elem()
+		t = r.Type()
+	}
+
 	if t.Kind() != reflect.Struct {
 		return nil,
 			fmt.Errorf("not a struct: cannot validate type of '%s'", t.Name())

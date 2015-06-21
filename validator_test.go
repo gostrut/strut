@@ -65,3 +65,20 @@ func TestStrutOnlyValidatesStructType(t *testing.T) {
 	_, err := val.Check("str")
 	assert.Equal(t, err.Error(), "not a struct: cannot validate type of 'string'")
 }
+
+func TestStructPointers(t *testing.T) {
+	type Person struct {
+		Name string `is_valid:"true"`
+	}
+
+	val := NewValidator()
+	val.Add("is_valid", validated)
+
+	a := Person{}
+	f, err := val.Check(&a)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.True(t, f.Valid())
+}
