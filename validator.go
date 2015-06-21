@@ -31,8 +31,10 @@ func NewValidator() *Validator {
 }
 
 // Add adds a ValidatorFunc for a given tag
-func (v *Validator) Add(n string, fn ValidatorFunc) {
+func (v *Validator) Add(n string, fn ValidatorFunc) *Validator {
 	v.validators[n] = fn
+
+	return v
 }
 
 func (v *Validator) validate(
