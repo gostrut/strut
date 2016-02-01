@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"gopkg.in/gostrut/strut.v1/invalid"
+	"github.com/gostrut/strut/invalid"
 )
 
 type tField struct {
